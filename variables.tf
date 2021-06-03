@@ -24,6 +24,11 @@ variable "lambda_authorizer" {
   default = null
 }
 
+variable "vpc_id" {
+  default = ""
+  description = "Vpc id where you want to deploy registry"
+}
+
 locals {
   name_prefix = var.name_prefix
 

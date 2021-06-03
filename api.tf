@@ -1,5 +1,16 @@
 resource "aws_api_gateway_rest_api" "root" {
   name = local.api_gateway_name
+  endpoint_configuration {
+    types            = ["PRIVATE"]
+    vpc_endpoint_ids = [aws_vpc_endpoint.private.id]
+  }
+}
+
+resource "aws_vpc_endpoint" "private" {
+  service_name        = "com.amazonaws.eu-central-1.execute-api"
+  vpc_id              = var.vpc_id
+  vpc_endpoint_type   = "Interface"
+  private_dns_enabled = true
 }
 
 resource "aws_api_gateway_resource" "modules_root" {
@@ -17,9 +28,6 @@ module "modules_v1" {
   dynamodb_table_name     = local.modules_table_name
   dynamodb_query_role_arn = aws_iam_role.modules.arn
 
-  custom_authorizer_id = (
-    length(aws_api_gateway_authorizer.main) > 0 ? aws_api_gateway_authorizer.main[0].id : null
-  )
 }
 
 module "disco" {
